@@ -107,7 +107,7 @@ def rsvCal(dateTime, closePrice=[], highPrice=[], lowPrice=[], closePriceTmp=[],
 
 
 while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
-    headers = {'Host':'www.phpno.com', 'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36', 'Connection':'keep-alive'}
+    headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36', 'Connection':'keep-alive'}
 
     # now = datetime.today()
     # nowStr = now.strftime("%H%M")
