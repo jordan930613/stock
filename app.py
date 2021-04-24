@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import time
-import jsons
+import json
 import ast
 import datetime
 import pandas as pd
@@ -122,8 +122,11 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     print(stockUrl)
     response = requests.get(stockUrl, headers=headers)
     print(response.status_code)
-    responseJson = jsons.loads(response.text)
-    firstTimestamp = responseJson[1]["time"]
+    responseJson = jsons.load(response.text)
+    print("responseJson = " + responseJson)
+
+    #firstTimestamp = responseJson[0]["time"]
+    firstTimestamp = jsons.load(response.text)[0]["time"]
     # dateTimeStrFix = 1618734589
     for i in range(0, 9):
         highPrice.append(responseJson[i]["high"])
@@ -142,7 +145,7 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     datetimeStr = now.strftime("%H%M")
     datatimeStr2 = now.strftime("%H:%M")
 
-    time.sleep(300)
+    #time.sleep(300)
     # print(responseJson[1]["time"])
 
     # soup = BeautifulSoup(response.text, "lxml")
