@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import time
-import json
+import orjson
 import ast
 import datetime
 import pandas as pd
@@ -106,7 +106,7 @@ def rsvCal(dateTime, closePrice=[], highPrice=[], lowPrice=[], closePriceTmp=[],
     #     csv_write.writerow(stockData)
 
 
-while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
+while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'}
 
@@ -123,9 +123,8 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     print(stockUrl)
     response = requests.get(stockUrl, headers=headers)
     print(response.status_code)
-    responseJson = json.loads(response.text)
-    print("responseJson = " + str(responseJson))
-    logging.debug(responseJson)
+    responseJson = orjson.loads(response.text)
+    # logging.debug(responseJson)
 
     firstTimestamp = responseJson[0]["time"]
     # dateTimeStrFix = 1618734589
