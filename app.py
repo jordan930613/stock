@@ -11,6 +11,7 @@ from linebot import (LineBotApi, WebhookHandler, exceptions)
 from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import *
 import schedule
+import logging
 
 count = 0
 data = []
@@ -123,7 +124,8 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     response = requests.get(stockUrl, headers=headers)
     print(response.status_code)
     responseJson = json.loads(response.text)
-    print("responseJson = " + responseJson)
+    print("responseJson = " + str(responseJson))
+    logging.debug(responseJson)
 
     firstTimestamp = responseJson[0]["time"]
     # dateTimeStrFix = 1618734589
