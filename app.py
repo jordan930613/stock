@@ -122,11 +122,10 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     print(stockUrl)
     response = requests.get(stockUrl, headers=headers)
     print(response.status_code)
-    responseJson = jsons.load(response.text)
+    responseJson = json.loads(response.text)
     print("responseJson = " + responseJson)
 
-    #firstTimestamp = responseJson[0]["time"]
-    firstTimestamp = jsons.load(response.text)[0]["time"]
+    firstTimestamp = responseJson[0]["time"]
     # dateTimeStrFix = 1618734589
     for i in range(0, 9):
         highPrice.append(responseJson[i]["high"])
