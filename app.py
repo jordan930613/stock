@@ -32,7 +32,8 @@ filename = datetimeStr + '.csv'
 
 # 必須放上自己的Channel Access Token
 line_bot_api = LineBotApi('6QUFBIE7QynL2wqsA+yOGDEP/PVzU6/I1M1gp62Q19rQuEDrVVgOmWwWZnBwxRDDb8YKLDTr72+03oqvNXYe+BWEPl0tCAj7MMlADJt+693H6/NVN+MPkb2IscY0dhm70S4+tf6M0slXVyDAFMyAkwdB04t89/1O/w1cDnyilFU=')
-
+# 必須放上自己的Channel Secret
+handler = WebhookHandler('a60ee4b634af158191dbbef6e0a85eb0')
 #your id
 yourid='U5012644ffad238c08dc547a96050214d'
 
@@ -110,6 +111,8 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
 
     # now = datetime.today()
     # nowStr = now.strftime("%H%M")
+    strTime = "現在時間 : " + datetimeStr
+    line_bot_api.push_message(yourid, TextSendMessage(text=strTime))
 
     dateTime = datetime.now().timestamp()
     dateTimeStr = str(dateTime)
