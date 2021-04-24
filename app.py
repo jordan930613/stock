@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import time
-import json
+import jsons
 import ast
 import datetime
 import pandas as pd
@@ -122,7 +122,7 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     print(stockUrl)
     response = requests.get(stockUrl, headers=headers)
     print(response.status_code)
-    responseJson = json.loads(response.text)
+    responseJson = jsons.loads(response.text)
     firstTimestamp = responseJson[1]["time"]
     # dateTimeStrFix = 1618734589
     for i in range(0, 9):
