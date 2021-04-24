@@ -124,10 +124,10 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     print("status code = " + str(response.status_code))
 
     if (response.status_code == 200):
-    responseJson = orjson.loads(response.text)
-    # logging.debug(responseJson)
+        responseJson = orjson.loads(response.text)
+        # logging.debug(responseJson)
 
-    firstTimestamp = responseJson[0]["time"]
+        firstTimestamp = responseJson[0]["time"]
         # dateTimeStrFix = 1618734589
         for i in range(0, 9):
             highPrice.append(responseJson[i]["high"])
