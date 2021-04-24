@@ -120,7 +120,7 @@ while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
 
     stockUrl = 'https://www.wantgoo.com/investrue/0000/historical-five-minutes-candlesticks?before=' + dateTimeStrFix
     print(stockUrl)
-    response = requests.get(stockUrl, headers=headers)
+    response = requests.get(stockUrl)  #, headers=headers
     print("status code = " + response.status_code)
     responseJson = orjson.loads(response.text)
     # logging.debug(responseJson)
