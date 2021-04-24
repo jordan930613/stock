@@ -107,8 +107,7 @@ def rsvCal(dateTime, closePrice=[], highPrice=[], lowPrice=[], closePriceTmp=[],
 
 
 while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'}
+    #headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'}
 
     # now = datetime.today()
     # nowStr = now.strftime("%H%M")
@@ -122,7 +121,7 @@ while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
     stockUrl = 'https://www.wantgoo.com/investrue/0000/historical-five-minutes-candlesticks?before=' + dateTimeStrFix
     print(stockUrl)
     response = requests.get(stockUrl, headers=headers)
-    print(response.status_code)
+    print("status code = " + response.status_code)
     responseJson = orjson.loads(response.text)
     # logging.debug(responseJson)
 
