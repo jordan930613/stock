@@ -106,7 +106,7 @@ def rsvCal(dateTime, closePrice=[], highPrice=[], lowPrice=[], closePriceTmp=[],
     #     csv_write.writerow(stockData)
 
 
-while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
+while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'}
 
     # now = datetime.today()
@@ -122,19 +122,21 @@ while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
     print(stockUrl)
     response = requests.get(stockUrl, headers=headers) 
     print("status code = " + str(response.status_code))
+
+    if (response.status_code == 200):
     responseJson = orjson.loads(response.text)
     # logging.debug(responseJson)
 
     firstTimestamp = responseJson[0]["time"]
-    # dateTimeStrFix = 1618734589
-    for i in range(0, 9):
-        highPrice.append(responseJson[i]["high"])
-        highPriceTmp.append(responseJson[i]["high"])
-        lowPrice.append(responseJson[i]["low"])
-        lowPriceTmp.append(responseJson[i]["low"])
-        closePrice.append(responseJson[i]["close"])
-        closePriceTmp.append(responseJson[i]["close"])   
-    rsvCal(datatimeStr2, closePrice, highPrice, lowPrice, closePriceTmp, highPriceTmp, lowPriceTmp)
+        # dateTimeStrFix = 1618734589
+        for i in range(0, 9):
+            highPrice.append(responseJson[i]["high"])
+            highPriceTmp.append(responseJson[i]["high"])
+            lowPrice.append(responseJson[i]["low"])
+            lowPriceTmp.append(responseJson[i]["low"])
+            closePrice.append(responseJson[i]["close"])
+            closePriceTmp.append(responseJson[i]["close"])   
+        rsvCal(datatimeStr2, closePrice, highPrice, lowPrice, closePriceTmp, highPriceTmp, lowPriceTmp)
 
     highPrice.clear()
     lowPrice.clear()
