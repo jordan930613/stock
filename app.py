@@ -146,7 +146,7 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     datetimeStr = now.strftime("%H%M")
     datatimeStr2 = now.strftime("%H:%M")
 
-    #time.sleep(300)
+    time.sleep(60)
     # print(responseJson[1]["time"])
 
     # soup = BeautifulSoup(response.text, "lxml")
