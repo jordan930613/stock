@@ -14,6 +14,10 @@ import schedule
 import logging
 from fake_headers import Headers
 import json
+import os
+from flask import Flask, request, abort
+
+app = Flask(__name__)
 
 count = 0
 data = []
@@ -122,40 +126,57 @@ while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
     strTime = "現在時間 : " + datetimeStr
     line_bot_api.push_message(yourid, TextSendMessage(text=strTime))
 
-    dateTime = datetime.now().timestamp()
-    dateTimeStr = str(dateTime)
-    dateTimeStrFix = dateTimeStr[:10] + '000'
+    restart = False
+    count = 0
+    while(restart == True or count == 0):
+        dateTime = datetime.now().timestamp()
+        dateTimeStr = str(dateTime)
+        dateTimeStrFix = dateTimeStr[:10] + '000'
 
-    stockUrl = 'https://www.wantgoo.com/investrue/0000/historical-five-minutes-candlesticks?before=' + dateTimeStrFix
-    print(stockUrl)
-    response = requests.get(stockUrl, headers=headerGen) 
-    print("status code = " + str(response.status_code))
-    #print("response text = " + str(response))
-    if (response.status_code == 200):
-        responseJson = json.loads(response.text)
-        print("responseJson = " + str(responseJson))
-        # logging.debug(responseJson)
+        stockUrl = 'https://www.wantgoo.com/investrue/0000/historical-five-minutes-candlesticks?before=' + dateTimeStrFix
+        print(stockUrl)
+        response = requests.get(stockUrl, headers=headerGen) 
+        print("status code = " + str(response.status_code))
+        #print("response text = " + str(response))
+        
+        if (response.status_code == 200):    
+            try :
+                responseJson = json.loads(response.text)
+                firstTimestamp = responseJson[0]["time"]
+                # dateTimeStrFix = 1618734589
+                for i in range(0, 9):
+                    highPrice.append(responseJson[i]["high"])
+                    highPriceTmp.append(responseJson[i]["high"])
+                    lowPrice.append(responseJson[i]["low"])
+                    lowPriceTmp.append(responseJson[i]["low"])
+                    closePrice.append(responseJson[i]["close"])
+                    closePriceTmp.append(responseJson[i]["close"])   
+                rsvCal(datatimeStr2, closePrice, highPrice, lowPrice, closePriceTmp, highPriceTmp, lowPriceTmp)
 
-        firstTimestamp = responseJson[0]["time"]
-         # dateTimeStrFix = 1618734589
-        for i in range(0, 9):
-            highPrice.append(responseJson[i]["high"])
-            highPriceTmp.append(responseJson[i]["high"])
-            lowPrice.append(responseJson[i]["low"])
-            lowPriceTmp.append(responseJson[i]["low"])
-            closePrice.append(responseJson[i]["close"])
-            closePriceTmp.append(responseJson[i]["close"])   
-        rsvCal(datatimeStr2, closePrice, highPrice, lowPrice, closePriceTmp, highPriceTmp, lowPriceTmp)
+                count = count + 1
+                restart = False
+            except:
+                print("json loads fail")
+                print("reload again")
+                restart = True
+            
+            # print("responseJson = " + str(responseJson))
+            # logging.debug(responseJson)       
 
-    highPrice.clear()
-    lowPrice.clear()
-    closePrice.clear()
+        highPrice.clear()
+        lowPrice.clear()
+        closePrice.clear()
 
-    now = datetime.now()
-    datetimeStr = now.strftime("%H%M")
-    datatimeStr2 = now.strftime("%H:%M")
+        now = datetime.now()
+        datetimeStr = now.strftime("%H%M")
+        datatimeStr2 = now.strftime("%H:%M")
 
-    time.sleep(60)
+        time.sleep(60)
+
+if __name__ == "__main__":
+    print("here")
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
 
 # schedule.every(1).minutes.days.at("15:10").do(job)
 #schedule.every().day.at("16:37").do(job)
