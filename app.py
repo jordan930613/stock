@@ -12,6 +12,8 @@ from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import *
 import schedule
 import logging
+from fake_headers import Headers
+import json
 
 count = 0
 data = []
@@ -105,9 +107,15 @@ def rsvCal(dateTime, closePrice=[], highPrice=[], lowPrice=[], closePriceTmp=[],
     #         csv_write.writeheader()
     #     csv_write.writerow(stockData)
 
+while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
+    header = Headers(
+        browser="chrome",  # Generate only Chrome UA
+        os="win",  # Generate ony Windows platform
+        headers=True  # generate misc headers
+    )
 
-while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
-    headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36', 'Connection':'keep-alive'}
+    headerGen = header.generate()
+    #headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36', 'Connection':'keep-alive'}
 
     # now = datetime.today()
     # nowStr = now.strftime("%H%M")
@@ -120,15 +128,16 @@ while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
 
     stockUrl = 'https://www.wantgoo.com/investrue/0000/historical-five-minutes-candlesticks?before=' + dateTimeStrFix
     print(stockUrl)
-    response = requests.get(stockUrl, headers=headers) 
+    response = requests.get(stockUrl, headers=headerGen) 
     print("status code = " + str(response.status_code))
-
+    #print("response text = " + str(response))
     if (response.status_code == 200):
-        responseJson = orjson.loads(response.text)
+        responseJson = json.loads(response.text)
+        print("responseJson = " + str(responseJson))
         # logging.debug(responseJson)
 
         firstTimestamp = responseJson[0]["time"]
-        # dateTimeStrFix = 1618734589
+         # dateTimeStrFix = 1618734589
         for i in range(0, 9):
             highPrice.append(responseJson[i]["high"])
             highPriceTmp.append(responseJson[i]["high"])
@@ -147,6 +156,13 @@ while (int(datetimeStr) < 900 and int(datetimeStr) < 1335):
     datatimeStr2 = now.strftime("%H:%M")
 
     time.sleep(60)
+
+# schedule.every(1).minutes.days.at("15:10").do(job)
+#schedule.every().day.at("16:37").do(job)
+
+# while(True):
+    # schedule.run_pending()
+    # time.sleep(1)
     # print(responseJson[1]["time"])
 
     # soup = BeautifulSoup(response.text, "lxml")
