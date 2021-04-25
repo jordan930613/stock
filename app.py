@@ -17,8 +17,6 @@ import json
 import os
 from flask import Flask, request, abort
 
-app = Flask(__name__)
-
 count = 0
 data = []
 
@@ -40,7 +38,7 @@ filename = datetimeStr + '.csv'
 # 必須放上自己的Channel Access Token
 line_bot_api = LineBotApi('6QUFBIE7QynL2wqsA+yOGDEP/PVzU6/I1M1gp62Q19rQuEDrVVgOmWwWZnBwxRDDb8YKLDTr72+03oqvNXYe+BWEPl0tCAj7MMlADJt+693H6/NVN+MPkb2IscY0dhm70S4+tf6M0slXVyDAFMyAkwdB04t89/1O/w1cDnyilFU=')
 # 必須放上自己的Channel Secret
-handler = WebhookHandler('a60ee4b634af158191dbbef6e0a85eb0')
+# handler = WebhookHandler('a60ee4b634af158191dbbef6e0a85eb0')
 #your id
 yourid='U5012644ffad238c08dc547a96050214d'
 
@@ -111,77 +109,65 @@ def rsvCal(dateTime, closePrice=[], highPrice=[], lowPrice=[], closePriceTmp=[],
     #         csv_write.writeheader()
     #     csv_write.writerow(stockData)
 
-def stock():
-    while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
-        header = Headers(
-            browser="chrome",  # Generate only Chrome UA
-            os="win",  # Generate ony Windows platform
-            headers=True  # generate misc headers
-        )
+while (int(datetimeStr) > 900 and int(datetimeStr) > 1335):
+    # headerGen = header.generate()
+    headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36', 'Connection':'keep-alive'}
 
-        # headerGen = header.generate()
-        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36', 'Connection':'keep-alive'}
+    # now = datetime.today()
+    # nowStr = now.strftime("%H%M")
+    strTime = "現在時間 : " + datetimeStr
+    line_bot_api.push_message(yourid, TextSendMessage(text=strTime))
 
-        # now = datetime.today()
-        # nowStr = now.strftime("%H%M")
-        strTime = "現在時間 : " + datetimeStr
-        line_bot_api.push_message(yourid, TextSendMessage(text=strTime))
+    restart = False
+    count = 0
+    while(restart == True or count == 0):
+        dateTime = datetime.now().timestamp()
+        dateTimeStr = str(dateTime)
+        dateTimeStrFix = dateTimeStr[:10] + '000'
 
-        restart = False
-        count = 0
-        while(restart == True or count == 0):
-            dateTime = datetime.now().timestamp()
-            dateTimeStr = str(dateTime)
-            dateTimeStrFix = dateTimeStr[:10] + '000'
-
-            stockUrl = 'https://www.wantgoo.com/investrue/0000/historical-five-minutes-candlesticks?before=' + dateTimeStrFix
-            print(stockUrl)
-            response = requests.get(stockUrl, headers=headers) 
-            print("status code = " + str(response.status_code))
-            #print("response text = " + str(response))
+        stockUrl = 'https://www.wantgoo.com/investrue/0000/historical-five-minutes-candlesticks?before=' + dateTimeStrFix
+        print(stockUrl)
+        response = requests.get(stockUrl, headers=headers) 
+        print("status code = " + str(response.status_code))
+        #print("response text = " + str(response))
             
-            if (response.status_code == 200):    
-                try :
-                    responseJson = json.loads(response.text)
-                    firstTimestamp = responseJson[0]["time"]
-                    # dateTimeStrFix = 1618734589
-                    for i in range(0, 9):
-                        highPrice.append(responseJson[i]["high"])
-                        highPriceTmp.append(responseJson[i]["high"])
-                        lowPrice.append(responseJson[i]["low"])
-                        lowPriceTmp.append(responseJson[i]["low"])
-                        closePrice.append(responseJson[i]["close"])
-                        closePriceTmp.append(responseJson[i]["close"])   
-                    rsvCal(datatimeStr2, closePrice, highPrice, lowPrice, closePriceTmp, highPriceTmp, lowPriceTmp)
+        if (response.status_code == 200):    
+            try :
+                responseJson = json.loads(response.text)
+                firstTimestamp = responseJson[0]["time"]
+                # dateTimeStrFix = 1618734589
+                for i in range(0, 9):
+                    highPrice.append(responseJson[i]["high"])
+                    highPriceTmp.append(responseJson[i]["high"])
+                    lowPrice.append(responseJson[i]["low"])
+                    lowPriceTmp.append(responseJson[i]["low"])
+                    closePrice.append(responseJson[i]["close"])
+                    closePriceTmp.append(responseJson[i]["close"])   
+                rsvCal(datatimeStr2, closePrice, highPrice, lowPrice, closePriceTmp, highPriceTmp, lowPriceTmp)
 
-                    count = count + 1
-                    restart = False
-                except:
-                    print("json loads fail")
-                    print("reload again")
-                    restart = True
+                count = count + 1
+                restart = False
+            except:
+                print("json loads fail")
+                print("reload again")
+                restart = True
                 
-                # print("responseJson = " + str(responseJson))
-                # logging.debug(responseJson)       
+            # print("responseJson = " + str(responseJson))
+            # logging.debug(responseJson)       
 
-            highPrice.clear()
-            lowPrice.clear()
-            closePrice.clear()
+        highPrice.clear()
+        lowPrice.clear()
+        closePrice.clear()
 
-            now = datetime.now()
-            datetimeStr = now.strftime("%H%M")
-            datatimeStr2 = now.strftime("%H:%M")
+        now = datetime.now()
+        datetimeStr = now.strftime("%H%M")
+        datatimeStr2 = now.strftime("%H:%M")
 
-            if (restart == False):
-                time.sleep(60)
-            else:
-                time.sleep(10)
-
-if __name__ == "__main__":
-    print("here")
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-    stock()
+        if (restart == False):
+            time.sleep(60)
+        else:
+            time.sleep(10)
+    
 
 # schedule.every(1).minutes.days.at("15:10").do(job)
 #schedule.every().day.at("16:37").do(job)
