@@ -10,3 +10,4 @@ pyshorteners
 scipy
 schedule
 orjson
+fake_headers
